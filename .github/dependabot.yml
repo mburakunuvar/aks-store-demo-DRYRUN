@@ -1,0 +1,73 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/src/order-service"
+    schedule:
+      interval: "daily"
+    assignees:
+      - "copilot"
+    labels:
+      - "dependencies"
+      - "security"
+      - "automated"
+
+  - package-ecosystem: "npm"
+    directory: "/src/store-front"
+    schedule:
+      interval: "daily"
+    assignees:
+      - "copilot"
+    labels:
+      - "dependencies"
+      - "automated"
+
+  - package-ecosystem: "npm"
+    directory: "/src/store-admin"
+    schedule:
+      interval: "daily"
+    assignees:
+      - "copilot"
+    labels:
+      - "dependencies"
+      - "automated"
+
+  - package-ecosystem: "pip"
+    directory: "/src/ai-service"
+    schedule:
+      interval: "daily"
+    assignees:
+      - "copilot"
+    labels:
+      - "dependencies"
+      - "automated"
+
+  - package-ecosystem: "gomod"
+    directory: "/src/makeline-service"
+    schedule:
+      interval: "daily"
+    assignees:
+      - "copilot"
+    labels:
+      - "dependencies"
+      - "automated"
+
+  - package-ecosystem: "cargo"
+    directory: "/src/product-service"
+    schedule:
+      interval: "daily"
+    assignees:
+      - "copilot"
+    labels:
+      - "dependencies"
+      - "automated"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    assignees:
+      - "copilot"
+    labels:
+      - "dependencies"
+      - "ci"
+      - "automated"
