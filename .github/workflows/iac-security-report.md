@@ -56,7 +56,7 @@ Scan the following paths for security misconfigurations:
 
 4. **Run Checkov scan** covering Terraform, Bicep, Helm, and Kubernetes in one pass:
    ```bash
-   checkov -d . --include-path infra/terraform --include-path infra/bicep --include-path kustomize --include-path charts \
+   checkov -d infra/terraform -d infra/bicep -d kustomize -d charts \
      --skip-path .git --compact --quiet -o json > /tmp/checkov-results.json 2>/dev/null || true
    ```
 
