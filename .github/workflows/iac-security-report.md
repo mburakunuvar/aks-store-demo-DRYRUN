@@ -42,7 +42,10 @@ Scan the following paths for security misconfigurations:
 
    # Kubernetes manifests (kustomize + root aks-store YAML files)
    trivy config --format json --output /tmp/trivy-k8s.json kustomize/ 2>/dev/null || true
-   trivy config --format json --output /tmp/trivy-k8s-root.json aks-store-all-in-one.yaml aks-store-quickstart.yaml aks-store-ingress-quickstart.yaml 2>/dev/null || true
+   root_manifests=(aks-store-*.yaml)
+   if [ -e "${root_manifests[0]}" ]; then
+     trivy config --format json --output /tmp/trivy-k8s-root.json "${root_manifests[@]}" 2>/dev/null || true
+   fi
 
    # Helm charts
    trivy config --format json --output /tmp/trivy-helm.json charts/ 2>/dev/null || true
