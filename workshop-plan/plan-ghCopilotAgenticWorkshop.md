@@ -421,6 +421,87 @@ By now, Copilot should have PRs from auto-created issues.
 
 **Takeaway**: The full loop — auto-scan → issue → agent codes → CI validates → agent iterates → code review → human approves.
 
+### Module 6: IaC Security Agent — Custom Copilot Agent for DevSecOps (10 min) — `main`
+
+_Topic: custom agents, DevSecOps, agentic SDLC_
+
+Create a **custom Copilot agent** that specializes in scanning Infrastructure-as-Code for security misconfigurations. This repo is perfect — it has Terraform, Bicep, Kubernetes manifests, Helm charts, and Dockerfiles.
+
+**Demo (3 min)**: Explain custom agents — specialized versions of Copilot with domain expertise, defined as markdown files in `.github/agents/`.
+
+**Hands-on (7 min)**: Attendees create `.github/agents/iac-security-agent.md` via github.com UI.
+
+This agent:
+
+- Scans Terraform (`infra/terraform/`), Bicep (`infra/bicep/`), K8s manifests (`kustomize/`, `aks-store-*.yaml`), Helm charts (`charts/`), and Dockerfiles
+- Categorizes findings by: IAM, Network Security, Data Protection, Logging, Container Security
+- Maps findings to CIS Azure, NIST 800-53, Azure Security Benchmark
+- Produces a structured security report with remediation diffs
+
+**After creating**: Go to any issue → create a new issue → type `@copilot Use the IaCSecurityAgent to scan this repository's infrastructure code and generate a security report` → assign to Copilot.
+
+**Takeaway**: Custom agents let you create specialized, reusable Copilot personas for recurring tasks. The IaC security agent turns ad-hoc security reviews into a repeatable, automated process.
+
+### Module 7: GitHub Agentic Workflows — Markdown-Defined Automation (10 min) — `main`
+
+_Topic: agentic workflows, GitHub Agentic Workflows (gh-aw)_
+
+**Concept**: GitHub Agentic Workflows (`gh aw`) let you write repository automation in **markdown** instead of complex YAML. An AI agent (Copilot, Claude, or Codex) executes the workflow in a sandboxed environment with guardrails.
+
+**Demo (5 min)**: Show the concept — a `.github/workflows/security-report.md` file that defines a daily security report workflow in natural language:
+
+```markdown
+---
+on:
+  schedule: weekly
+  workflow_dispatch:
+permissions:
+  contents: read
+  issues: read
+  pull-requests: read
+safe-outputs:
+  create-issue:
+    title-prefix: "[security-report] "
+    labels: [security, report, automated]
+    close-older-issues: true
+---
+
+## Weekly IaC Security Report
+
+Scan all infrastructure-as-code files in this repository and generate a comprehensive security report as a GitHub issue.
+
+## What to scan
+
+- Terraform files in `infra/terraform/`
+- Bicep files in `infra/bicep/`
+- Kubernetes manifests in `kustomize/` and root `aks-store-*.yaml` files
+- Helm charts in `charts/`
+- Dockerfiles in each `src/*/Dockerfile`
+
+## What to report
+
+- Misconfigurations and insecure defaults
+- Findings grouped by: Identity & Access, Network Security, Data Protection, Container Security, Logging
+- Severity classification: Critical, High, Medium, Low
+- Specific file paths and line numbers for each finding
+- Recommended fixes with code snippets
+- Compliance mapping to CIS Azure and NIST 800-53 where applicable
+
+## Report format
+
+Use a structured markdown report with summary table and detailed findings sections.
+```
+
+**Hands-on (5 min)**: Attendees create this workflow file via github.com UI. Then:
+
+1. Install the `gh-aw` CLI extension (or use the web interface)
+2. Compile: `gh aw compile` generates the `.lock.yml` action file
+3. Trigger: Actions tab → "Run workflow" or `gh aw run security-report`
+
+**Key narrative**: This is the next evolution — you don't write YAML pipelines anymore, you describe what you want in markdown and an AI agent executes it. Combine this with the IaC security agent for a fully autonomous security review pipeline.
+
+**Takeaway**: GitHub Agentic Workflows are "Continuous AI" — scheduled, recurring AI automation defined in natural language with built-in guardrails.
+
 ### Recap + Wrap-Up (5 min)
 
 ```
@@ -448,12 +529,13 @@ By now, Copilot should have PRs from auto-created issues.
 
 **Topics roundup**:
 
-| Workshop Topic              | Where Covered                                                       |
-| --------------------------- | ------------------------------------------------------------------- |
-| github.com agentic features | Module 1 (Chat), Module 5 (Code Review)                             |
-| Agentic loops               | Module 4 (scan→issue→agent→CI→iterate), Module 5 (commit history)   |
-| Agentic workflows           | Module 4 (automated pipeline), Module 2 (Dependabot+Copilot)        |
-| Custom/agentic SDLC         | Module 2 (instructions), Module 3 (DevSecOps), Recap (full picture) |
+| Workshop Topic              | Where Covered                                                                  |
+| --------------------------- | ------------------------------------------------------------------------------ |
+| github.com agentic features | Module 1 (Chat), Module 5 (Code Review), Module 6 (Custom Agents)              |
+| Agentic loops               | Module 4 (scan→issue→agent→CI→iterate), Module 5 (commit history)              |
+| Agentic workflows           | Module 4 (automated pipeline), Module 2 (Dependabot+Copilot), Module 7 (gh-aw) |
+| Custom/agentic SDLC         | Module 2 (instructions), Module 3 (DevSecOps), Module 6 (IaC agent), Recap     |
+| DevSecOps showcase          | Module 3 (Autofix), Module 6 (IaC security agent), Module 7 (security report)  |
 
 ---
 

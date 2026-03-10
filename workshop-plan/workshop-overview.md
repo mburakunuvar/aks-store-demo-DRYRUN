@@ -20,26 +20,30 @@
 | 3   | **DevSecOps Showcase**                           | 10 min   | Facilitator demo             | Watch: Dependabot alerts, CodeQL findings, Copilot Autofix, Secret Scanning (facilitator's pre-baked fork)                                                | Agentic SDLC, DevSecOps              | —                     |
 | 4   | **Agentic Workflows — Automated Issue Pipeline** | 20 min   | Demo 7 min → Hands-on 13 min | Create `security-audit-autofix.yml` → trigger → watch: npm/pip audit + test coverage check → auto-creates issues → assigns to Copilot → agent creates PRs | Agentic workflows, automated actions | `checkpoint/module-4` |
 | 5   | **Coding Agent + Code Review — Full Loop**       | 15 min   | Demo 5 min → Hands-on 10 min | Inspect agent PRs, manually create 1 issue & assign to Copilot, add Copilot as PR reviewer, interact with review comments                                 | Agentic loops, Code Review           | —                     |
+| 6   | **IaC Security Agent — Custom Copilot Agent**    | 10 min   | Demo 3 min → Hands-on 7 min  | Create `.github/agents/iac-security-agent.md`, invoke via issue to scan Terraform/Bicep/K8s for misconfigurations                                         | Custom agents, DevSecOps             | —                     |
+| 7   | **GitHub Agentic Workflows (gh-aw)**             | 10 min   | Demo 5 min → Hands-on 5 min  | Create `security-report.md` workflow in markdown — AI agent generates weekly IaC security report as an issue                                              | Agentic workflows, Continuous AI     | —                     |
 | —   | **Recap + Wrap-Up**                              | 5 min    | Presenter-led                | Review the full autonomous pipeline diagram; see what's now running daily on their fork                                                                   | All topics                           | —                     |
 
 ## Topic Coverage Matrix
 
-| Workshop Topic                  |        Module 1        |       Module 2        |       Module 3       |            Module 4            |       Module 5       |
-| ------------------------------- | :--------------------: | :-------------------: | :------------------: | :----------------------------: | :------------------: |
-| **github.com agentic features** |        ✅ Chat         |                       |                      |                                |    ✅ Code Review    |
-| **Agentic loops**               |                        |                       |                      | ✅ scan→issue→agent→CI→iterate | ✅ PR commit history |
-| **Agentic workflows**           |                        | ✅ Dependabot+Copilot |                      |     ✅ Automated pipeline      |                      |
-| **Custom/agentic SDLC**         |                        |    ✅ Instructions    |     ✅ DevSecOps     |                                |     ✅ Full loop     |
-| **DevSecOps showcase**          | ✅ Security assessment | ✅ CodeQL, Dependabot | ✅ Autofix, Scanning |      ✅ Auto-remediation       |                      |
+| Workshop Topic                  |   Module 1    |    Module 2     |   Module 3   |        Module 4        |     Module 5      |     Module 6     |      Module 7      |
+| ------------------------------- | :-----------: | :-------------: | :----------: | :--------------------: | :---------------: | :--------------: | :----------------: |
+| **github.com agentic features** |    ✅ Chat    |                 |              |                        |  ✅ Code Review   | ✅ Custom Agents |                    |
+| **Agentic loops**               |               |                 |              | ✅ scan→issue→agent→CI | ✅ commit history |                  |                    |
+| **Agentic workflows**           |               |  ✅ Dependabot  |              | ✅ Automated pipeline  |                   |                  |      ✅ gh-aw      |
+| **Custom/agentic SDLC**         |               | ✅ Instructions | ✅ DevSecOps |                        |   ✅ Full loop    |   ✅ IaC agent   |                    |
+| **DevSecOps showcase**          | ✅ Assessment |    ✅ CodeQL    |  ✅ Autofix  |  ✅ Auto-remediation   |                   | ✅ IaC scanning  | ✅ Security report |
 
 ## Files Created During Workshop
 
 | Module | File                                           | Purpose                                                                             |
 | ------ | ---------------------------------------------- | ----------------------------------------------------------------------------------- |
 | 2      | `.github/copilot-instructions.md`              | Coding standards + security requirements — shapes all Copilot behavior              |
-| 2      | `.github/dependabot.yml`                       | Daily dep scanning (npm, pip, gomod, cargo, actions) — auto-assigns to Copilot      |
+| 2      | `.github/dependabot.yml`                       | Daily dep scanning (npm, pip, gomod, cargo, actions)                                |
 | 2      | `.github/workflows/codeql.yml`                 | CodeQL SAST for JS, Python, Go — feeds Copilot Autofix                              |
 | 4      | `.github/workflows/security-audit-autofix.yml` | Automated pipeline: audit deps + find test gaps → create issues → assign to Copilot |
+| 6      | `.github/agents/iac-security-agent.md`         | Custom Copilot agent for IaC security scanning                                      |
+| 7      | `.github/workflows/security-report.md`         | Agentic workflow: weekly IaC security report in markdown                            |
 
 ## Take-Home Exercises (async, post-workshop)
 
@@ -53,14 +57,14 @@
 
 ## Pre-Workshop Checklist
 
-| Who             | Task                                                                     |
-| --------------- | ------------------------------------------------------------------------ |
-| **Facilitator** | Prepare source repo with checkpoint branches                             |
-| **Facilitator** | Create pre-baked fork with Dependabot/CodeQL results (30+ min lead time) |
-| **Facilitator** | Prepare handout with YAML snippets + issue bodies (copy-paste ready)     |
-| **Facilitator** | Verify Copilot + Coding Agent enabled at org level                       |
-| **Facilitator** | Dry-run full pipeline end-to-end                                         |
-| **Attendee**    | Fork the repo                                                            |
-| **Attendee**    | Enable GitHub Actions (Settings → Actions → Allow all)                   |
-| **Attendee**    | Verify Copilot Chat works on github.com                                  |
+| Who             | Task                                                                                                  |
+| --------------- | ----------------------------------------------------------------------------------------------------- |
+| **Facilitator** | Prepare source repo with checkpoint branches                                                          |
+| **Facilitator** | Create pre-baked fork with Dependabot/CodeQL results (30+ min lead time)                              |
+| **Facilitator** | Prepare handout with YAML snippets + issue bodies (copy-paste ready)                                  |
+| **Facilitator** | Verify Copilot + Coding Agent enabled at org level                                                    |
+| **Facilitator** | Dry-run full pipeline end-to-end                                                                      |
+| **Attendee**    | Fork the repo                                                                                         |
+| **Attendee**    | Enable GitHub Actions (Settings → Actions → Allow all)                                                |
+| **Attendee**    | Verify Copilot Chat works on github.com                                                               |
 | **Attendee**    | Create `PAT_TOKEN` repo secret (Fine-grained PAT: Actions, Contents, Issues, Pull requests — all R&W) |
