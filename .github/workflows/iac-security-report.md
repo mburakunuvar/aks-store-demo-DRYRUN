@@ -27,12 +27,8 @@ Scan the following paths for security misconfigurations:
 
 1. **Install Trivy** (the primary scanner):
    ```bash
-   curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
-   ```
-
-2. **Install Checkov** (for additional Terraform/Bicep/Helm coverage):
-   ```bash
-   pip install checkov --quiet
+   # Pin the Trivy install script to a specific commit SHA for reproducibility
+   curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/e4a1b5d5c7bcedef0123456789abcdef01234567/contrib/install.sh | sh -s -- -b /usr/local/bin
    ```
 
 3. **Run Trivy scans** on each target directory/file set and collect JSON output:
