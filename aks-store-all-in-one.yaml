@@ -257,6 +257,13 @@ spec:
           image: busybox:1.37.0
           command:
             ["sh", "-c", "until nc -zv rabbitmq 5672; do echo waiting for rabbitmq; sleep 2; done;"]
+          resources:
+            requests:
+              cpu: 1m
+              memory: 50Mi
+            limits:
+              cpu: 100m
+              memory: 256Mi
           securityContext:
             runAsNonRoot: true
             runAsUser: 1000
