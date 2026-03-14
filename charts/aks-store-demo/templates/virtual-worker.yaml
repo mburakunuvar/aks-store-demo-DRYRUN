@@ -23,6 +23,8 @@ spec:
           value: http://makeline-service:3001
         - name: ORDERS_PER_HOUR
           value: {{ .Values.virtualWorker.ordersPerHour | quote }}
+        securityContext:
+          {{- toYaml .Values.securityContext | nindent 10 }}
         resources:
           requests:
             cpu: 1m

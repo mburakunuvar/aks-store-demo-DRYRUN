@@ -1,3 +1,14 @@
+# NOTE: Replace these base64-encoded default values with strong, unique
+# credentials before deploying to any non-local environment.
+# dXNlcm5hbWU= = "username"  |  cGFzc3dvcmQ= = "password"
+apiVersion: v1
+kind: Secret
+metadata:
+  name: makeline-service-secrets
+data:
+  ORDER_QUEUE_USERNAME: dXNlcm5hbWU=
+  ORDER_QUEUE_PASSWORD: cGFzc3dvcmQ=
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -14,6 +25,7 @@ spec:
     spec:
       nodeSelector:
         "kubernetes.io/os": linux
+      automountServiceAccountToken: false
       containers:
         - name: makeline-service
           image: ghcr.io/azure-samples/aks-store-demo/makeline-service:2.1.0
@@ -22,10 +34,6 @@ spec:
           env:
             - name: ORDER_QUEUE_URI
               value: "amqp://rabbitmq:5672"
-            - name: ORDER_QUEUE_USERNAME
-              value: "username"
-            - name: ORDER_QUEUE_PASSWORD
-              value: "password"
             - name: ORDER_QUEUE_NAME
               value: "orders"
             - name: ORDER_DB_URI
@@ -34,6 +42,17 @@ spec:
               value: "orderdb"
             - name: ORDER_DB_COLLECTION_NAME
               value: "orders"
+          envFrom:
+            - secretRef:
+                name: makeline-service-secrets
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
           resources:
             requests:
               cpu: 1m

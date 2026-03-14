@@ -24,6 +24,14 @@ spec:
           envFrom:
             - configMapRef:
                 name: ai-service
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
           resources:
             requests:
               cpu: 20m

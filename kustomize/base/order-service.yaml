@@ -1,3 +1,14 @@
+# NOTE: Replace these base64-encoded default values with strong, unique
+# credentials before deploying to any non-local environment.
+# dXNlcm5hbWU= = "username"  |  cGFzc3dvcmQ= = "password"
+apiVersion: v1
+kind: Secret
+metadata:
+  name: order-service-secrets
+data:
+  ORDER_QUEUE_USERNAME: dXNlcm5hbWU=
+  ORDER_QUEUE_PASSWORD: cGFzc3dvcmQ=
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -14,6 +25,7 @@ spec:
     spec:
       nodeSelector:
         "kubernetes.io/os": linux
+      automountServiceAccountToken: false
       containers:
         - name: order-service
           image: ghcr.io/azure-samples/aks-store-demo/order-service:2.1.0
@@ -24,14 +36,21 @@ spec:
               value: "rabbitmq"
             - name: ORDER_QUEUE_PORT
               value: "5672"
-            - name: ORDER_QUEUE_USERNAME
-              value: "username"
-            - name: ORDER_QUEUE_PASSWORD
-              value: "password"
             - name: ORDER_QUEUE_NAME
               value: "orders"
             - name: FASTIFY_ADDRESS
               value: "0.0.0.0"
+          envFrom:
+            - secretRef:
+                name: order-service-secrets
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
           resources:
             requests:
               cpu: 1m
@@ -65,6 +84,13 @@ spec:
           image: busybox:1.37.0
           command:
             ["sh", "-c", "until nc -zv rabbitmq 5672; do echo waiting for rabbitmq; sleep 2; done;"]
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           resources:
             requests:
               cpu: 1m

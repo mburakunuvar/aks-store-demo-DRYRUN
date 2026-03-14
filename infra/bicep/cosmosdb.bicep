@@ -87,13 +87,11 @@ module databaseAccount 'br/public:avm/res/document-db/database-account:0.11.3' =
     //     currentIpAddress
     //   ]
     // }
-    roleAssignments: [
-      {
-        principalId: servicePrincipalId
-        roleDefinitionIdOrName: 'DocumentDB Account Contributor'
-        principalType: 'ServicePrincipal'
-      }
-    ]
+    // NOTE: Data-plane access is granted via sqlRoleAssignments above.
+    // The broad 'DocumentDB Account Contributor' control-plane role has been
+    // intentionally removed; grant it explicitly only if account management
+    // operations are required by an automated pipeline.
+    roleAssignments: []
     tags: tags
   }
 }

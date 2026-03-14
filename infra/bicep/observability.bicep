@@ -15,6 +15,7 @@ resource logWorkspace 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
     sku: {
       name: 'PerGB2018'
     }
+    retentionInDays: 90
   }
   tags: tags
 }

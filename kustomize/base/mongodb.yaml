@@ -15,12 +15,19 @@ spec:
     spec:
       nodeSelector:
         "kubernetes.io/os": linux
+      automountServiceAccountToken: false
       containers:
         - name: mongodb
           image: mcr.microsoft.com/mirror/docker/library/mongo:4.2
           ports:
             - containerPort: 27017
               name: mongodb
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           resources:
             requests:
               cpu: 5m

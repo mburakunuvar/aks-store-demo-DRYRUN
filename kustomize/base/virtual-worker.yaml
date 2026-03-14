@@ -14,6 +14,7 @@ spec:
     spec:
       nodeSelector:
         "kubernetes.io/os": linux
+      automountServiceAccountToken: false
       containers:
         - name: virtual-worker
           image: ghcr.io/azure-samples/aks-store-demo/virtual-worker:2.1.0
@@ -22,6 +23,14 @@ spec:
               value: http://makeline-service:3001
             - name: ORDERS_PER_HOUR
               value: "100"
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
           resources:
             requests:
               cpu: 1m

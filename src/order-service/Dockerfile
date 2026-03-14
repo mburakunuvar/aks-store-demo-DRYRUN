@@ -16,6 +16,9 @@ RUN npm install --production
 # Copy the rest of the app source code to the container
 COPY . .
 
+# Switch to the built-in non-root node user
+USER node
+
 # Expose the port the app listens on
 EXPOSE 3000
 

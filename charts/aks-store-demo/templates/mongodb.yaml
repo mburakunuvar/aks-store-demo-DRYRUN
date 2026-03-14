@@ -22,6 +22,12 @@ spec:
         ports:
         - containerPort: 27017
           name: mongodb
+        securityContext:
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
         resources:
           requests:
             cpu: 5m

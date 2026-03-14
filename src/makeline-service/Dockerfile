@@ -21,6 +21,10 @@ ARG APP_VERSION=0.1.0
 # Copy the build output from the builder container
 COPY --from=builder /app/main .
 
+# Create a non-root user and switch to it
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+USER appuser
+
 # Expose port 3001 for the container
 EXPOSE 3001
 
