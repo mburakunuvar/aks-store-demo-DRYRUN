@@ -23,6 +23,7 @@ spec:
     spec:
       nodeSelector:
         "kubernetes.io/os": linux
+      automountServiceAccountToken: false
       containers:
         - name: rabbitmq
           image: mcr.microsoft.com/azurelinux/base/rabbitmq-server:3.13
@@ -34,6 +35,12 @@ spec:
           envFrom:
             - secretRef:
                 name: rabbitmq-secrets
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           resources:
             requests:
               cpu: 10m
@@ -129,6 +136,7 @@ spec:
     spec:
       nodeSelector:
         "kubernetes.io/os": linux
+      automountServiceAccountToken: false
       containers:
         - name: order-service
           image: ghcr.io/azure-samples/aks-store-demo/order-service:2.1.0
@@ -139,6 +147,14 @@ spec:
                 name: order-service-configs
             - secretRef:
                 name: order-service-secrets
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
           resources:
             requests:
               cpu: 1m
@@ -179,6 +195,13 @@ spec:
             limits:
               cpu: 75m
               memory: 128Mi
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
 ---
 apiVersion: v1
 kind: Service
@@ -209,6 +232,7 @@ spec:
     spec:
       nodeSelector:
         "kubernetes.io/os": linux
+      automountServiceAccountToken: false
       containers:
         - name: product-service
           image: ghcr.io/azure-samples/aks-store-demo/product-service:2.1.0
@@ -217,6 +241,14 @@ spec:
           env:
             - name: AI_SERVICE_URL
               value: "http://ai-service:5001/"
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
           resources:
             requests:
               cpu: 1m
@@ -268,12 +300,20 @@ spec:
     spec:
       nodeSelector:
         "kubernetes.io/os": linux
+      automountServiceAccountToken: false
       containers:
         - name: store-front
           image: ghcr.io/azure-samples/aks-store-demo/store-front:2.1.0
           ports:
             - containerPort: 8080
               name: store-front
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 101
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           resources:
             requests:
               cpu: 1m

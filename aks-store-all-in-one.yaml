@@ -15,12 +15,19 @@ spec:
     spec:
       nodeSelector:
         "kubernetes.io/os": linux
+      automountServiceAccountToken: false
       containers:
         - name: mongodb
           image: mcr.microsoft.com/mirror/docker/library/mongo:4.2
           ports:
             - containerPort: 27017
               name: mongodb
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           resources:
             requests:
               cpu: 5m
@@ -93,6 +100,7 @@ spec:
     spec:
       nodeSelector:
         "kubernetes.io/os": linux
+      automountServiceAccountToken: false
       containers:
         - name: rabbitmq
           image: mcr.microsoft.com/azurelinux/base/rabbitmq-server:3.13
@@ -104,6 +112,12 @@ spec:
           envFrom:
             - secretRef:
                 name: rabbitmq-secrets
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           resources:
             requests:
               cpu: 10m
@@ -191,6 +205,7 @@ spec:
     spec:
       nodeSelector:
         "kubernetes.io/os": linux
+      automountServiceAccountToken: false
       containers:
         - name: order-service
           image: ghcr.io/azure-samples/aks-store-demo/order-service:2.1.0
@@ -201,6 +216,14 @@ spec:
                 name: order-service-configs
             - secretRef:
                 name: order-service-secrets
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
           resources:
             requests:
               cpu: 1m
@@ -241,6 +264,13 @@ spec:
             limits:
               cpu: 100m
               memory: 256Mi
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
 ---
 apiVersion: v1
 kind: Service
@@ -254,6 +284,17 @@ spec:
       targetPort: 3000
   selector:
     app: order-service
+---
+# NOTE: Replace these base64-encoded default values with strong, unique
+# credentials before deploying to any non-local environment.
+# dXNlcm5hbWU= = "username"  |  cGFzc3dvcmQ= = "password"
+apiVersion: v1
+kind: Secret
+metadata:
+  name: makeline-service-secrets
+data:
+  ORDER_QUEUE_USERNAME: dXNlcm5hbWU=
+  ORDER_QUEUE_PASSWORD: cGFzc3dvcmQ=
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -271,6 +312,7 @@ spec:
     spec:
       nodeSelector:
         "kubernetes.io/os": linux
+      automountServiceAccountToken: false
       containers:
         - name: makeline-service
           image: ghcr.io/azure-samples/aks-store-demo/makeline-service:2.1.0
@@ -279,10 +321,6 @@ spec:
           env:
             - name: ORDER_QUEUE_URI
               value: "amqp://rabbitmq:5672"
-            - name: ORDER_QUEUE_USERNAME
-              value: "username"
-            - name: ORDER_QUEUE_PASSWORD
-              value: "password"
             - name: ORDER_QUEUE_NAME
               value: "orders"
             - name: ORDER_DB_URI
@@ -291,6 +329,17 @@ spec:
               value: "orderdb"
             - name: ORDER_DB_COLLECTION_NAME
               value: "orders"
+          envFrom:
+            - secretRef:
+                name: makeline-service-secrets
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
           resources:
             requests:
               cpu: 1m
@@ -348,6 +397,7 @@ spec:
     spec:
       nodeSelector:
         "kubernetes.io/os": linux
+      automountServiceAccountToken: false
       containers:
         - name: product-service
           image: ghcr.io/azure-samples/aks-store-demo/product-service:2.1.0
@@ -356,6 +406,14 @@ spec:
           env:
             - name: AI_SERVICE_URL
               value: "http://ai-service:5001/"
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
           resources:
             requests:
               cpu: 1m
@@ -407,12 +465,20 @@ spec:
     spec:
       nodeSelector:
         "kubernetes.io/os": linux
+      automountServiceAccountToken: false
       containers:
         - name: store-front
           image: ghcr.io/azure-samples/aks-store-demo/store-front:2.1.0
           ports:
             - containerPort: 8080
               name: store-front
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 101
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           resources:
             requests:
               cpu: 1m
@@ -470,12 +536,20 @@ spec:
     spec:
       nodeSelector:
         "kubernetes.io/os": linux
+      automountServiceAccountToken: false
       containers:
         - name: store-admin
           image: ghcr.io/azure-samples/aks-store-demo/store-admin:2.1.0
           ports:
             - containerPort: 8081
               name: store-admin
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 101
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           resources:
             requests:
               cpu: 1m
@@ -533,6 +607,7 @@ spec:
     spec:
       nodeSelector:
         "kubernetes.io/os": linux
+      automountServiceAccountToken: false
       containers:
         - name: virtual-customer
           image: ghcr.io/azure-samples/aks-store-demo/virtual-customer:2.1.0
@@ -541,6 +616,14 @@ spec:
               value: http://order-service:3000/
             - name: ORDERS_PER_HOUR
               value: "100"
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
           resources:
             requests:
               cpu: 1m
@@ -581,6 +664,7 @@ spec:
     spec:
       nodeSelector:
         "kubernetes.io/os": linux
+      automountServiceAccountToken: false
       containers:
         - name: virtual-worker
           image: ghcr.io/azure-samples/aks-store-demo/virtual-worker:2.1.0
@@ -589,6 +673,14 @@ spec:
               value: http://makeline-service:3001
             - name: ORDERS_PER_HOUR
               value: "100"
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
           resources:
             requests:
               cpu: 1m

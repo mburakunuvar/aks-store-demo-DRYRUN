@@ -23,6 +23,8 @@ spec:
           value: http://order-service:3000/
         - name: ORDERS_PER_HOUR
           value: {{ .Values.virtualCustomer.ordersPerHour | quote }}
+        securityContext:
+          {{- toYaml .Values.securityContext | nindent 10 }}
         resources:
           requests:
             cpu: 1m

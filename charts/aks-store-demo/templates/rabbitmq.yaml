@@ -43,6 +43,12 @@ spec:
         envFrom:
         - secretRef:
             name: rabbitmq-secrets
+        securityContext:
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
         resources:
           requests:
             cpu: 10m

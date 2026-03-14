@@ -14,12 +14,20 @@ spec:
     spec:
       nodeSelector:
         "kubernetes.io/os": linux
+      automountServiceAccountToken: false
       containers:
         - name: store-front
           image: ghcr.io/azure-samples/aks-store-demo/store-front:2.1.0
           ports:
             - containerPort: 8080
               name: store-front
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 101
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           resources:
             requests:
               cpu: 1m

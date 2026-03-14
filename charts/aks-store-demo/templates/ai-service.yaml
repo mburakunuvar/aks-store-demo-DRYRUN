@@ -84,6 +84,8 @@ spec:
         - secretRef:
             name: ai-service-secrets
         {{- end }}
+        securityContext:
+          {{- toYaml .Values.securityContext | nindent 10 }}
         resources:
           requests:
             cpu: 20m

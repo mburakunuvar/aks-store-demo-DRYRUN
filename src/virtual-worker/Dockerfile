@@ -36,6 +36,11 @@ RUN apt-get update && apt-get install -y libssl-dev && rm -rf /var/lib/apt/lists
 # Copy the binary from the builder stage
 COPY --from=builder /virtual-worker/target/release/virtual-worker /app
 
+# Create a non-root user, set ownership, and switch to it
+RUN groupadd --system appgroup && useradd --no-log-init --system --gid appgroup appuser \
+    && chown -R appuser:appgroup /app
+USER appuser
+
 # Set the environment variable for the app version number
 ENV APP_VERSION=$APP_VERSION
 

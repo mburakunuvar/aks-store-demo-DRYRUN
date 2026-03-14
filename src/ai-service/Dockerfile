@@ -16,6 +16,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the rest of the application code into the container
 COPY . .
 
+# Create a non-root user and switch to it
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+USER appuser
+
 # Expose port 5001 for the FastAPI application
 EXPOSE 5001
 

@@ -39,9 +39,16 @@ module serviceBusNamespace 'br/public:avm/res/service-bus/namespace:0.15.0' = {
         roleDefinitionIdOrName: 'Azure Service Bus Data Owner'
         principalType: 'User'
       }
+      // Least-privilege: grant separate Sender and Receiver roles instead of
+      // the broad Data Owner role to the workload managed identity.
       {
         principalId: servicePrincipalId
-        roleDefinitionIdOrName: 'Azure Service Bus Data Owner'
+        roleDefinitionIdOrName: 'Azure Service Bus Data Sender'
+        principalType: 'ServicePrincipal'
+      }
+      {
+        principalId: servicePrincipalId
+        roleDefinitionIdOrName: 'Azure Service Bus Data Receiver'
         principalType: 'ServicePrincipal'
       }
     ]

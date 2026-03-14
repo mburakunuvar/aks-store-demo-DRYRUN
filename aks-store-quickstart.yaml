@@ -1,3 +1,30 @@
+# NOTE: Replace these base64-encoded default values with strong, unique
+# credentials before deploying to any non-local environment.
+# dXNlcm5hbWU= = "username"  |  cGFzc3dvcmQ= = "password"
+apiVersion: v1
+kind: Secret
+metadata:
+  name: rabbitmq-secrets
+data:
+  RABBITMQ_DEFAULT_USER: dXNlcm5hbWU=
+  RABBITMQ_DEFAULT_PASS: cGFzc3dvcmQ=
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: order-service-secrets
+data:
+  ORDER_QUEUE_USERNAME: dXNlcm5hbWU=
+  ORDER_QUEUE_PASSWORD: cGFzc3dvcmQ=
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: makeline-service-secrets
+data:
+  ORDER_QUEUE_USERNAME: dXNlcm5hbWU=
+  ORDER_QUEUE_PASSWORD: cGFzc3dvcmQ=
+---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -15,6 +42,7 @@ spec:
     spec:
       nodeSelector:
         "kubernetes.io/os": linux
+      automountServiceAccountToken: false
       containers:
         - name: rabbitmq
           image: mcr.microsoft.com/azurelinux/base/rabbitmq-server:3.13
@@ -23,11 +51,15 @@ spec:
               name: rabbitmq-amqp
             - containerPort: 15672
               name: rabbitmq-http
-          env:
-            - name: RABBITMQ_DEFAULT_USER
-              value: "username"
-            - name: RABBITMQ_DEFAULT_PASS
-              value: "password"
+          envFrom:
+            - secretRef:
+                name: rabbitmq-secrets
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           resources:
             requests:
               cpu: 10m
@@ -105,6 +137,7 @@ spec:
     spec:
       nodeSelector:
         "kubernetes.io/os": linux
+      automountServiceAccountToken: false
       containers:
         - name: order-service
           image: ghcr.io/azure-samples/aks-store-demo/order-service:2.1.0
@@ -115,14 +148,21 @@ spec:
               value: "rabbitmq"
             - name: ORDER_QUEUE_PORT
               value: "5672"
-            - name: ORDER_QUEUE_USERNAME
-              value: "username"
-            - name: ORDER_QUEUE_PASSWORD
-              value: "password"
             - name: ORDER_QUEUE_NAME
               value: "orders"
             - name: FASTIFY_ADDRESS
               value: "0.0.0.0"
+          envFrom:
+            - secretRef:
+                name: order-service-secrets
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
           resources:
             requests:
               cpu: 1m
@@ -156,6 +196,13 @@ spec:
           image: busybox:1.37.0
           command:
             ["sh", "-c", "until nc -zv rabbitmq 5672; do echo waiting for rabbitmq; sleep 2; done;"]
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           resources:
             requests:
               cpu: 1m
@@ -193,6 +240,7 @@ spec:
     spec:
       nodeSelector:
         "kubernetes.io/os": linux
+      automountServiceAccountToken: false
       containers:
         - name: product-service
           image: ghcr.io/azure-samples/aks-store-demo/product-service:2.1.0
@@ -201,6 +249,14 @@ spec:
           env:
             - name: AI_SERVICE_URL
               value: "http://ai-service:5001/"
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
           resources:
             requests:
               cpu: 1m
@@ -252,12 +308,20 @@ spec:
     spec:
       nodeSelector:
         "kubernetes.io/os": linux
+      automountServiceAccountToken: false
       containers:
         - name: store-front
           image: ghcr.io/azure-samples/aks-store-demo/store-front:2.1.0
           ports:
             - containerPort: 8080
               name: store-front
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 101
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           resources:
             requests:
               cpu: 1m

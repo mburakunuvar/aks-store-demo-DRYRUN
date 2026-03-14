@@ -20,6 +20,13 @@ spec:
         ports:
         - containerPort: 8081
           name: store-admin         # container images hosted on ghcr.io and will be removed in future releases
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 101
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
         resources:
           requests:
             cpu: 1m
